@@ -1,0 +1,26 @@
+#!/bin/bash
+#####################################
+# use the id3v2 tag editor to 
+# recursively name mp3 artist
+# and album according to folder
+#####################################
+
+if [ -z $1 ];then echo Give target directory; exit 0;fi
+cd $1
+for artist in *;
+do
+	echo "artist: " "$artist"
+	cd "$1$artist"
+	for album in *;
+	do
+		echo "album: " "$album"
+		cd "$1$artist/$album"
+		for song in *.mp3;
+		do
+			echo "song: " "$1$artist/$album/$song"
+			id3v2 -a "$artist" -A "$album" "$1$artist/$album/$song"
+			#id3v2 -l "$1$artist/$album/$song"
+		done
+	done
+done
+exit 0

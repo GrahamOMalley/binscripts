@@ -1,0 +1,9 @@
+#! /bin/bash
+
+if [ -z $1 ];then echo Usage: swap File1 File2; exit 0;fi
+if [ -z $2 ];then echo No File2 given, exiting; exit 0;fi
+
+cp $1 backup.temp
+mv $2 $1
+mv backup.temp $2
+echo "Swapped $1 with $2"

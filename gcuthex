@@ -1,0 +1,7 @@
+#! /bin/bash
+for f in *; do 
+    new=`echo $f | sed -e 's/\[[0-9a-f]*\]//g'`;
+    mv $f $new
+done;
+
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+email=gomgomgom@gmail.com
+curl -u $email --silent "https://mail.google.com/mail/feed/atom" |   perl -ne 'print "Subject: $1 " if /<title>(.+?)<\/title>/ && $title++; print "(from $1)\n" if /<email>(.+?)<\/email>/;'
