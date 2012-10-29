@@ -1,7 +1,7 @@
 #! /bin/bash
 
 USER='GrahamOMalley'
-PASS='s1teswap'
+PASS=
 REPO=$1
 
 curl -u "$USER:$PASS" https://api.github.com/user/repos -d '{"name":"'$REPO'"}'
