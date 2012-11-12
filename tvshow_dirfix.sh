@@ -8,7 +8,7 @@ mv */* .;
 
 for d in {1...$1};
 do
-    rm_empties;
+    find . -type d -empty -exec rmdir {} \;
     mkdir season_$d;
     mv *s0$d* season_$d;
 done;
