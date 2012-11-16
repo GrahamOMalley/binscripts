@@ -37,8 +37,8 @@ def copy_show(s):
         # unicode screws up some shows, convert to latin-1 ascii
         series_name = unicode(series_name, "latin-1")
         unicodedata.normalize('NFKD', series_name).encode('ascii','ignore')
-        fileName, fileExtension = os.path.splitext(f['path'])
 
+        fileName, fileExtension = os.path.splitext(f['path'])
         ftarget = target + series_name  + "/" + season_dir + "/" + series_name + "_s"+ s + e + fileExtension
         nfo = target + series_name  + "/" + season_dir + "/" + series_name + "_s"+ s + e + ".nfo"
 
