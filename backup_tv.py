@@ -20,9 +20,10 @@ def get_show(s):
         file_info.append(d);
     return file_info
 
-def copy_show(s):
-    print "******************* COPYING SHOW: ",s," ******************* "
-    for f in get_show(s):
+def copy_show(show):
+    print "******************* COPYING SHOW: ",show," ******************* "
+    for f in get_show(show):
+        # TODO: need to handle joined episodes like show_s01e02e03.avi
         s = "0" + f['season'] if(int(f['season'])<10) else f['season']
         e = "e0" + f['episode'] if(int(f['episode'])<10) else "e" + f['episode']
         season_dir = "season_" + s
@@ -49,7 +50,8 @@ def copy_show(s):
         if not os.path.isdir(target + series_name + "/" + season_dir):
             print "\tDirectory: ", season_dir, " does not exist, creating..."
             os.mkdir(target + series_name + "/" + season_dir)
-        
+
+        # TODO: read in nfo file and alter path?
         if os.path.isfile(fileName+".nfo"):
             print "\tCopying ", fileName+".nfo", " to ", nfo
             shutil.copy2(fileName+".nfo", nfo)
