@@ -6,10 +6,16 @@ import gomXBMCTools
 import re
 import argparse
 
+from datetime import datetime
+startTime = datetime.now()
+
 parser = argparse.ArgumentParser(description='Backs up shows from the xbmc library to a new tv directory, renaming and organising files and creating sane tvshow/season/episode dir structure')
 parser.add_argument('-a', '--all',  action="store_true", default=False, help='Copy ALL shows')
 parser.add_argument('-s', '--show', type=str, required=False, help='The shows name')
 parser.add_argument('-t', '--target', type=str, required=False, default='/home/gom/nas/tv/', help='Target directory')
+parser.add_argument('--test',  action="store_true", default=True, help='Don\'t actually copy episodes, just create empty file')
+parser.add_argument('-v', '--verbose',  action="store_true", default=False, help='Verbose output')
+parser.add_argument('-m', '--metadata',  action="store_true", default=False, help='Also copy xbmc metadata')
 args = parser.parse_args()
 # normalise target
 args.target = os.path.normpath(args.target)
@@ -18,7 +24,7 @@ args.target += "/"
 mysql_con = MySQLdb.connect (host = "localhost",user = "xbmc",passwd = "xbmc",db = "xbmc_video60")
 
 # tv root dirs
-tv_root_dirs = ["/media/tv2/", "/media/twoTB1/videos/tv/"]
+tv_root_dirs = ["/media/tv2/", "/media/twoTB1/videos/tv/", "/media/twoTB1/videos/anime"]
 xbmc_metadata = ["folder.jpg", "tvshow.nfo", "fanart.jpg"]
 
 def makeFile(file_name):
@@ -80,7 +86,8 @@ def copyShow(show):
         e = "e0" + f['episode'] if(int(f['episode'])<10) else "e" + f['episode']
 
         if(prev_path == f['path']):
-            print "duplicate: ", f['path']
+            if args.verbose:
+                print "\t\t\tduplicate: ", f['path']
             continue
 
         # need to handle joined episodes like show_s01e02e03.avi
@@ -106,42 +113,57 @@ def copyShow(show):
         createDirIfNotExist(args.target + series_name)
         createDirIfNotExist(args.target + series_name + os.path.sep + season_dir)
 
-        # TODO: read in nfo file and alter path?
-        if os.path.isfile(fileName+".nfo"):
-            #print "\tCopying ", fileName+".nfo", " to ", nfo
-            shutil.copy2(fileName+".nfo", nfo)
+        if args.verbose:
+            print "\t\tCopying ", f['path'], " to ", ftarget
+        if args.test:
+            makeFile(ftarget)
+        else:
+            shutil.copy2(f['path'], ftarget)
 
-        #print "\tCopying ", f['path'], " to ", ftarget
-        makeFile(ftarget)
-        #shutil.copy2(f['path'], ftarget)
+        if args.metadata:
+            # Copy episode.nfo
+            if os.path.isfile(fileName+".nfo"):
+                #print "\tCopying ", fileName+".nfo", " to ", nfo
+                shutil.copy2(fileName+".nfo", nfo)
 
-        # Copy any tbn/nfo/fanart etc
-        show_root = getShowRootPath(f['path'])
-        if show_root not in show_dirs:
-            print "\t\tDiscovered show root dir: ", show_root
-            show_dirs.append(show_root)
-            # copy any .nfo/tbn/etc files
-            tbns = [f for f in os.listdir(show_root) if re.match(r'season.*.tbn', f)] + xbmc_metadata
-            tbns.sort()
-            for file in tbns:
-                if os.path.exists(show_root + os.path.sep + file):
-                    print "\t\t\tFound ", file, ", copying to ", args.target, series_name
-                    shutil.copy2(show_root + os.path.sep + file, args.target + series_name)
-            print ""
+            # Copy any tbn/nfo/fanart etc
+            show_root = getShowRootPath(f['path'])
+            if ((show_root not in show_dirs) and show_root):
+                print "\t\tDiscovered show root dir: ", show_root
+                show_dirs.append(show_root)
+                # copy any .nfo/tbn/etc files
+                try:
+                    tbns = [f for f in os.listdir(show_root) if re.match(r'season.*.tbn', f)]
+                except:
+                    tbns = []
+
+                tbns += xbmc_metadata
+                tbns.sort()
+                for file in tbns:
+                    if os.path.exists(show_root + os.path.sep + str(file)):
+                        print "\t\t\tFound ", file, ", copying to ", args.target, series_name
+                        shutil.copy2(show_root + os.path.sep + file, args.target + series_name)
+                print ""
 
 def copyAll():
     """
         copyAll(): copies EVERYTHING from xbmc tv show library
     """
     mc = mysql_con.cursor()
+    #mc.execute("select distinct strTitle from episodeview order by strTitle limit 25")
     mc.execute("select distinct strTitle from episodeview order by strTitle")
     for m in mc:
         copyShow(m[0])
 
 if __name__ == "__main__":
+    print "Script started at: ", startTime
     if args.all:
         copyAll()
     elif args.show:
         copyShow(args.show)
     else:
         parser.parse_args(["-h"])
+    
+    print "Script took: ", datetime.now()-startTime
+
+

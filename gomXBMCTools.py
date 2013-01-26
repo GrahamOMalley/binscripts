@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import unicodedata
 import unittest
+import re
 
 def normaliseTVShowName(series_name):
     """ 
@@ -23,7 +24,19 @@ def normaliseTVShowName(series_name):
     unicodedata.normalize('NFKD', series_name).encode('ascii','ignore')
     return series_name
 
-class TestFunctions(unittest.TestCase):
+
+def getEpisodeNumFromFilename(file, s):
+    """ 
+    getEpisodeNumFromFilename(file): parse filename, return episode number
+    """ 
+    sNeN = re.compile(".*s01e([0-9][0-9]).*")
+    gr = sNeN.findall(file)
+    if(gr[0]):
+        return "e"+str(gr[0])
+
+    return "e-1"
+
+class testFunctions(unittest.TestCase):
 
     def setUp(self):
         self.shows = { "Adam And Joe Go Tokyo":"adam_and_joe_go_tokyo",
@@ -53,6 +66,6 @@ class TestFunctions(unittest.TestCase):
 
 if __name__ == "__main__":
     # unit tests
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestFunctions)
+    suite = unittest.TestLoader().loadTestsFromTestCase(testFunctions)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
