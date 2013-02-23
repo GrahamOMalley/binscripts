@@ -24,6 +24,10 @@ def normaliseTVShowName(series_name):
     unicodedata.normalize('NFKD', series_name).encode('ascii','ignore')
     return series_name
 
+def getTorrentNameFromMagnetLink(torrent):
+    tor = re.sub("&tr.*$", "", torrent)
+    tor = re.sub("magnet.*=", "", tor)
+    return tor
 
 def getEpisodeNumFromFilename(file, s):
     """ 
@@ -35,6 +39,12 @@ def getEpisodeNumFromFilename(file, s):
         return "e"+str(gr[0])
 
     return "e-1"
+
+def formatNoAsStr(no):
+    """ 
+    formatSeasonOrEpNo(): pad a zero if no < 10, else do nothing
+    """
+    return "0" + str(no) if(int(no)<10) else str(no)
 
 class testFunctions(unittest.TestCase):
 

@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description='Backs up shows from the xbmc libra
 parser.add_argument('-a', '--all',  action="store_true", default=False, help='Copy ALL shows')
 parser.add_argument('-s', '--show', type=str, required=False, help='The shows name')
 parser.add_argument('-t', '--target', type=str, required=False, default='/home/gom/nas/tv/', help='Target directory')
-parser.add_argument('--test',  action="store_true", default=True, help='Don\'t actually copy episodes, just create empty file')
+parser.add_argument('--test',  action="store_true", default=False, help='Don\'t actually copy episodes, just create empty file')
 parser.add_argument('-v', '--verbose',  action="store_true", default=False, help='Verbose output')
 parser.add_argument('-m', '--metadata',  action="store_true", default=False, help='Also copy xbmc metadata')
 args = parser.parse_args()
@@ -113,12 +113,15 @@ def copyShow(show):
         createDirIfNotExist(args.target + series_name)
         createDirIfNotExist(args.target + series_name + os.path.sep + season_dir)
 
-        if args.verbose:
-            print "\t\tCopying ", f['path'], " to ", ftarget
         if args.test:
+            print "\t\tCreating empty ", f['path'], " at ", ftarget
             makeFile(ftarget)
         else:
-            shutil.copy2(f['path'], ftarget)
+            if(os.path.exists(ftarget)):
+               print "\t\tSkipping file ", ftarget, " as it already exists..."
+            else:
+                print "\t\tCopying ", f['path'], " to ", ftarget
+                shutil.copy2(f['path'], ftarget)
 
         if args.metadata:
             # Copy episode.nfo
