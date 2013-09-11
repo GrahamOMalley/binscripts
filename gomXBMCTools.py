@@ -35,8 +35,12 @@ def getEpisodeNumFromFilename(file, s):
     """ 
     sNeN = re.compile(".*s01e([0-9][0-9]).*")
     gr = sNeN.findall(file)
-    if(gr[0]):
-        return "e"+str(gr[0])
+    try:
+        if(gr[0]):
+            return "e"+str(gr[0])
+    except:
+        pass
+    
 
     return "e-1"
 

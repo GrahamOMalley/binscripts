@@ -1,4 +1,0 @@
-#! /bin/bash
-
-#nice -n 15 xwinwrap -ni -fs -s -sp -st -b -nf -- /usr/lib/xscreensaver/$1 -root -window-id WID
-nice -n 15 xwinwrap -ni -o 0.20 -fs -s -sp -st -b -nf -- /usr/lib/xscreensaver/$1 -root -window-id WID

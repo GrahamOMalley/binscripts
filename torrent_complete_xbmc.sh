@@ -11,5 +11,5 @@ then
     echo "Usage: notifyxbmc \"message\""
 else
     #xbmc-send -a "Notification($subject,$message)"
-    xbmc-send -a "UpdateLibrary(video)"
+    xbmc-send --action="UpdateLibrary(video)" --host=192.168.1.101
 fi
