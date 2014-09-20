@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 if test -z $1; then
     echo "Please supply host"; exit 0;
 else
