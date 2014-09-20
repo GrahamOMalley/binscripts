@@ -49,6 +49,10 @@ scp -r $HOST:.vim/tags .vim/
 scp -r $HOST:.vim/templates .vim/
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
+# code
+echo "Copying python code workspace"
+mkdir code
+scp -r $HOST:code/python code/
 
 # copy the msql db
 

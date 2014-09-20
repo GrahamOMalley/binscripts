@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 import argparse
 import shutil
+from sys import exit
 
-parser = argparse.ArgumentParser(description='Adds ps2 games to the steam shortcuts grid')
-parser.add_argument('-f', '--nogui', action="store_true", default=True, required=False, help='If adding ps2 game, start pcsx2 in nogui mode')
+# TODO: add options for PS1, GC
+parser = argparse.ArgumentParser(description='Adds emulator games to the steam shortcuts grid')
+parser.add_argument('-e', '--emulator', type=str, required=True, help='Which emulator type? (ps1/ps2/gamecube)')
 parser.add_argument('-g', '--game', type=str, required=True, help='Name of game to add')
 args = parser.parse_args()
 
@@ -12,10 +14,25 @@ args = parser.parse_args()
 # uncomment this if not running through cygwin 
 #shortcuts = "C:\Program Files (x86)\Steam\userdata\\60545819\config\shortcuts.vdf"
 shortcuts = "/cygdrive/c/Program Files (x86)/Steam/userdata/60545819/config/shortcuts.vdf"
-ps2exe = "C:\Program Files (x86)\PCSX2 1.0.0\pcsx2-r5350.exe"
-ps2sd = "C:\Program Files (x86)\PCSX2 1.0.0"
 game = args.game
-isopath = "E:\Games\Emulators\PS2\\"
+
+# TODO per emulator
+if args.emulator == "ps2":
+    exe = "C:\Program Files (x86)\PCSX2 1.0.0\pcsx2-r5350.exe"
+    start_directory = "C:\Program Files (x86)\PCSX2 1.0.0"
+    isopath = "E:\Games\Emulators\PS2\\"
+elif args.emulator == "ps1":
+    exe = ""
+    start_directory = ""
+    isopath = ""
+elif args.emulator == "gamecube":
+    exe = ""
+    start_directory = ""
+    isopath = ""
+else:
+    print "Unrecognised emulator: ", args.emulator
+    print "Acceptable emulator switch values are ps1 ps2 gamecube"
+    exit()
 
 print "Backing up old shortcuts file to %s" % (shortcuts + "back")
 shutil.copy2(shortcuts, shortcuts+"back")
@@ -113,8 +130,8 @@ except: # TODO catch an actual exception you dummy
 # add new entries
 e = {}
 e['AppName'] = game
-e['Exe'] = enqoute(ps2exe) + " " + enqoute(isopath + game + "\\" + game + ".iso") + " --cfgpath=" + enqoute(isopath + game + "\\" + "inis") +" --nogui --fullscreen"
-e['StartDir'] = enqoute(ps2sd)
+e['Exe'] = enqoute(exe) + " " + enqoute(isopath + game + "\\" + game + ".iso") + " --cfgpath=" + enqoute(isopath + game + "\\" + "inis") +" --nogui --fullscreen"
+e['StartDir'] = enqoute(start_directory)
 e['Category'] = "Emulator"
 print isopath
 print e
